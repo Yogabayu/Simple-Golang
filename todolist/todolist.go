@@ -125,8 +125,14 @@ func init() {
 func main() {
 	defer db.Close()
 
-	db.Debug().DropTableIfExists(&TodoItemModel{})
-	db.Debug().AutoMigrate(&TodoItemModel{})
+	// Mengecek apakah tabel TodoItemModel sudah ada dalam database
+	if !db.HasTable(&TodoItemModel{}) {
+		// Jika tabel belum ada, lakukan operasi auto migrate
+		db.Debug().AutoMigrate(&TodoItemModel{})
+	} else {
+		// Jika tabel sudah ada, tampilkan pesan log
+		log.Info("Table TodoItemModel already exists")
+	}
 
 	log.Info("Starting Todolist API server")
 	router := mux.NewRouter()
